@@ -3,9 +3,9 @@ package com.redhat.lightblue.facade.inclog
 import org.slf4j.LoggerFactory
 
 case class IncLogEntry(date: String, bean: String, method: String, paramStr: String, diff: IncLogDiff)
-case class IncLogPathDiff(fields: List[Field]) extends IncLogDiff
+case class IncLogPathDiff(pathDiffs: List[PathDiff]) extends IncLogDiff
 case class IncLogCountDiff() extends IncLogDiff
-case class Field(path: String)
+case class PathDiff(path: String)
 
 trait IncLogDiff {}
 
@@ -28,9 +28,7 @@ object IncLogEntryExtractor {
             case Some(regexp(date, bean, method, paramStr, diffStr)) => {
                 try {
                     val diff = diffStr match {
-                        case IncLogDiffExtractor(diff) => {
-                            diff
-                        }
+                        case IncLogDiffExtractor(diff) => diff
                     }
                     Some(IncLogEntry(date, bean, method, paramStr, diff))
                 } catch {
@@ -66,12 +64,12 @@ object IncLogEntryExtractor {
         }
     }
 
-    def parsePathDiff(_fieldStr: String): Field = {
+    def parsePathDiff(_fieldStr: String): PathDiff = {
         val fieldStr = _fieldStr.trim()
 
         if (fieldStr.isEmpty()) {
             // there is a case when diff is empty... what is going on?
-            return Field("<empty>")
+            return PathDiff("<empty>")
         }
 
         if (!fieldStr.contains("Expected") && !fieldStr.contains("Unexpected")) {
@@ -87,6 +85,6 @@ object IncLogEntryExtractor {
         // should it be a count diff?
         fieldName = if (fieldName.isEmpty()) { "<this>" } else { fieldName }
 
-        Field(fieldName)
+        PathDiff(fieldName)
     }
 }

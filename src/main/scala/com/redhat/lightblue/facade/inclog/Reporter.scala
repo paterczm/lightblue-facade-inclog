@@ -12,11 +12,14 @@ object Reporter {
 
         inc.diff match {
             case p: IncLogPathDiff => {
-                p.fields.foreach { field =>
+                p.pathDiffs.foreach { path =>
 
-                    inconsistentPaths.get(field.path) match {
-                        case Some(count) => inconsistentPaths.put(field.path, count + 1)
-                        case None => inconsistentPaths.put(field.path, 1)
+                    // val id = s"""${inc.bean}.${inc.method} ${path.path}"""
+                    val id = s"""${inc.bean} ${path.path}"""
+
+                    inconsistentPaths.get(id) match {
+                        case Some(count) => inconsistentPaths.put(id, count + 1)
+                        case None => inconsistentPaths.put(id, 1)
                     }
 
                 }
