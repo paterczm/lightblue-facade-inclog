@@ -6,6 +6,10 @@ import scala.util.matching.Regex
 import java.nio.file.Paths
 import java.nio.file.Files
 import java.nio.charset.StandardCharsets
+import java.nio.file.Path
+import java.nio.file.StandardOpenOption
+import java.nio.charset.Charset
+import java.io.FileWriter
 
 case class ReporterConfig(include: Option[Regex], exclude: Option[Regex])
 
@@ -16,7 +20,14 @@ object Reporter {
     def add(inc: IncLogEntry) = {
         inc.diff match {
             case p: IncLogPathDiff => {
-                p.pathDiffs.foreach { path => addInconsistency(s"""${inc.bean} ${path.path}""") }
+                p.pathDiffs.foreach {
+                    path => {
+                        val id = s"""${inc.bean} ${path.path}"""
+                        addInconsistency(id)
+                        saveInconsistency(id, inc.line)
+
+                    }
+                }
 
             }
             case c: IncLogCountDiff => { addInconsistency(s"""${inc.bean} <array elem not found>""") }
@@ -28,6 +39,14 @@ object Reporter {
             case Some(count) => inconsistencies.put(id, count + 1)
             case None => inconsistencies.put(id, 1)
         }
+    }
+
+    private def saveInconsistency(id: String, line: String) {
+        val fileName = id.replaceAll(" ", "-")
+
+        val fw = new FileWriter(s"""inc/$fileName.txt""", true);
+        fw.write(line);
+        fw.close()
     }
 
     def generateReport(config: ReporterConfig) = {
