@@ -3,13 +3,14 @@
 package com.redhat.lightblue.facade.inclog
 
 import scala.io.Source
-import org.apache.commons.cli.Options
-import org.apache.commons.cli.Option
-import org.slf4j.LoggerFactory
-import org.apache.commons.cli.DefaultParser
-import org.apache.commons.cli.MissingOptionException
-import org.apache.commons.cli.HelpFormatter
 import scala.util.matching.Regex
+
+import org.apache.commons.cli.DefaultParser
+import org.apache.commons.cli.HelpFormatter
+import org.apache.commons.cli.MissingOptionException
+import org.apache.commons.cli.Option
+import org.apache.commons.cli.Options
+import org.slf4j.LoggerFactory
 
 object IncLog extends App {
 
@@ -85,6 +86,10 @@ object IncLog extends App {
             })
 
         Reporter.generateReport(config)
+
+        // test twirl
+        val clientPage = html.index.apply("client");
+        println(clientPage.body)
 
     } catch {
         case e: MissingOptionException => {
