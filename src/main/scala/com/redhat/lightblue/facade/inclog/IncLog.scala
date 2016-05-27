@@ -54,6 +54,16 @@ object IncLog extends App {
         var incsProcessed = 0
         var linesProcessed = 0
 
+        implicit val config = Config(
+            cmd.hasOption('i') match {
+                case true => Some(new Regex(cmd.getOptionValue('i')))
+                case false => None
+            },
+            cmd.hasOption('e') match {
+                case true => Some(new Regex(cmd.getOptionValue('e')))
+                case false => None
+            })
+
         filePaths foreach { filePath =>
             for (line <- Source.fromFile(filePath).getLines()) {
 
@@ -65,9 +75,7 @@ object IncLog extends App {
                         incsProcessed += 1
                     }
                     case _ => {
-                        // not an inconsistency, can be facade's InconsistencyChecker error
-                        // TODO: handle "payload and diff is greater than X bytes" inconsistencies
-                        logger.warn(s"""Not recognized as inconsistency: $line""")
+                        // ignore
                     }
                 }
             }
@@ -75,17 +83,7 @@ object IncLog extends App {
 
         println(s"""Processed $incsProcessed/$linesProcessed (recogonized inconsistencies / all log lines)""")
 
-        val config = ReporterConfig(
-            cmd.hasOption('i') match {
-                case true => Some(new Regex(cmd.getOptionValue('i')))
-                case false => None
-            },
-            cmd.hasOption('e') match {
-                case true => Some(new Regex(cmd.getOptionValue('e')))
-                case false => None
-            })
-
-        Reporter.generateReport(config)
+        Reporter.generateReport()
 
     } catch {
         case e: MissingOptionException => {
