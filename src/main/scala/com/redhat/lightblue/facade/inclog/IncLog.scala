@@ -87,10 +87,6 @@ object IncLog extends App {
 
         Reporter.generateReport(config)
 
-        // test twirl
-        val clientPage = html.index.apply("client");
-        println(clientPage.body)
-
     } catch {
         case e: MissingOptionException => {
             logger.error(e.getMessage());

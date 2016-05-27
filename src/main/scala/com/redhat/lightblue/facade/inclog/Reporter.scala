@@ -1,8 +1,11 @@
 package com.redhat.lightblue.facade.inclog
 
+import scala.collection.immutable.List
 import scala.collection.mutable.HashMap
-import scala.collection.mutable.MutableList
 import scala.util.matching.Regex
+import java.nio.file.Paths
+import java.nio.file.Files
+import java.nio.charset.StandardCharsets
 
 case class ReporterConfig(include: Option[Regex], exclude: Option[Regex])
 
@@ -28,8 +31,8 @@ object Reporter {
     }
 
     def generateReport(config: ReporterConfig) = {
-        inconsistencies.toList.sortBy(_._2).reverse foreach {
-            case (id, count) => {
+        val incList = inconsistencies.toList.filter {
+            case (id, _) => {
 
                 val include = config.include match {
                     case Some(x) => x.pattern.matcher(id).matches()
@@ -41,10 +44,14 @@ object Reporter {
                     case None => false
                 }
 
-                if (include && !exclude) {
-                    println(s"""$id: $count""")
-                }
+                include && !exclude
+
             }
-        }
+        }.sortBy(_._2).reverse
+
+        val clientPage = html.index.render(incList, new java.util.Date());
+
+        Files.write(Paths.get("index.html"), clientPage.body.getBytes(StandardCharsets.UTF_8))
+
     }
 }

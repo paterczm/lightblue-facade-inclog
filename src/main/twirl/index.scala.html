@@ -1,5 +1,21 @@
-@(customer: String)
+@(incs: scala.collection.immutable.List[(String, Int)], date: java.util.Date)
 
 <html>
- <h1>Welcome @customer</h1>
+<head></head>
+<body>
+	<h1>Report @date.toString</h1>
+
+	<table>
+		<thead>
+			<tr><th>id</th><th>count</th></tr>
+		</thead>
+		<tbody>
+			@for((id, count) <- incs) {
+			<tr><td>@id</td><td>@count</td></tr>
+			}
+		</tbody>
+	</table>
+
+</body>
+
 </html>
