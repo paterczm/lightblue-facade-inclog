@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.MissingOptionException
 import org.apache.commons.cli.HelpFormatter
+import scala.util.matching.Regex
 
 object IncLog extends App {
 
@@ -24,7 +25,23 @@ object IncLog extends App {
         .argName("lb-inconsistency.log")
         .build();
 
+    val includeOption = Option.builder("i")
+        .required(false)
+        .desc("include regex")
+        .longOpt("include")
+        .hasArg()
+        .build();
+
+    val excludeOption = Option.builder("e")
+        .required(false)
+        .desc("exclude regex")
+        .longOpt("exclude")
+        .hasArg()
+        .build();
+
     options.addOption(inconsistencyLogFilesOption);
+    options.addOption(includeOption)
+    options.addOption(excludeOption)
 
     val parser = new DefaultParser();
 
@@ -55,9 +72,19 @@ object IncLog extends App {
             }
         }
 
-        println(s"""Processed $incsProcessed/$linesProcessed (recgonized inconsistencies / all log lines)""")
+        println(s"""Processed $incsProcessed/$linesProcessed (recogonized inconsistencies / all log lines)""")
 
-        Reporter.generateReport()
+        val config = ReporterConfig(
+            cmd.hasOption('i') match {
+                case true => Some(new Regex(cmd.getOptionValue('i')))
+                case false => None
+            },
+            cmd.hasOption('e') match {
+                case true => Some(new Regex(cmd.getOptionValue('e')))
+                case false => None
+            })
+
+        Reporter.generateReport(config)
 
     } catch {
         case e: MissingOptionException => {
