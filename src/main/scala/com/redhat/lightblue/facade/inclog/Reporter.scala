@@ -21,8 +21,7 @@ object Reporter {
                 p.pathDiffs.foreach {
                     path =>
                         {
-                            p.id = s"""${inc.bean} ${path.path}"""
-                            addInconsistency(p.id, inc)
+                            addInconsistency(s"""${inc.bean} ${path.path}""", inc)
                         }
                 }
 

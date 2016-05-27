@@ -17,7 +17,7 @@ object IncLogDiffExtractor {
         if (diffStr.startsWith("""[]: Expected""") || diffStr == "One object is null and the other isn't"
             || diffStr.contains("Could not find match for element")) {
             // there is no diff path - this inconsistency applies to object count returned
-            return Some(IncLogCountDiff(null))
+            return Some(IncLogCountDiff())
         }
 
         logger.debug("Diff before: " + diffStr)
@@ -28,7 +28,7 @@ object IncLogDiffExtractor {
             fields.foreach { field => logger.debug("Diff after: " + field.path) }
         }
 
-        Some(IncLogPathDiff(fields, null))
+        Some(IncLogPathDiff(fields))
     }
 
     def parsePathDiff(_fieldStr: String): PathDiff = {

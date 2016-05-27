@@ -6,13 +6,11 @@ import scala.util.matching.Regex
 case class IncLogEntry(date: String, bean: String, method: String, paramStr: String, var diff: IncLogDiff, line: String) {
     def call = s"""$bean.$method"""
 }
-case class IncLogPathDiff(pathDiffs: List[PathDiff], override var id: String) extends IncLogDiff
-case class IncLogCountDiff(override var id: String) extends IncLogDiff
+case class IncLogPathDiff(pathDiffs: List[PathDiff]) extends IncLogDiff
+case class IncLogCountDiff() extends IncLogDiff
 case class PathDiff(path: String)
 
-abstract class IncLogDiff() {
-    var id: String
-}
+abstract class IncLogDiff() {}
 
 case class Config(val includeRegex: Option[Regex], val excludeRegex: Option[Regex])
 
