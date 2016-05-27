@@ -2,10 +2,10 @@ package com.redhat.lightblue.facade.loginc
 
 import org.junit.Test
 import org.junit.Assert._
-import com.redhat.lightblue.facade.inclog.IncLogEntryExtractor.IncLogDiffExtractor
 import com.redhat.lightblue.facade.inclog.IncLogCountDiff
 import com.redhat.lightblue.facade.inclog.IncLogPathDiff
 import com.redhat.lightblue.facade.inclog.IncLogPathDiff
+import com.redhat.lightblue.facade.inclog.IncLogDiffExtractor
 
 class IncLogDiffExtractorTest {
 
