@@ -159,7 +159,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.redhat.rpmversions.App</mainClass>
+                            <mainClass>com.redhat.lightblue.facade.inclog.IncLog</mainClass>
                         </manifest>
                     </archive>
 
