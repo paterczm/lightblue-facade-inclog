@@ -11,6 +11,9 @@ import org.apache.commons.cli.MissingOptionException
 import org.apache.commons.cli.Option
 import org.apache.commons.cli.Options
 import org.slf4j.LoggerFactory
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
 
 object IncLog extends App {
 
@@ -40,9 +43,17 @@ object IncLog extends App {
         .hasArg()
         .build();
 
+    val outputOption = Option.builder("o")
+        .required(true)
+        .desc("Report output directory")
+        .longOpt("output")
+        .hasArg()
+        .build();
+
     options.addOption(inconsistencyLogFilesOption);
     options.addOption(includeOption)
     options.addOption(excludeOption)
+    options.addOption(outputOption)
 
     val parser = new DefaultParser();
 
@@ -55,6 +66,7 @@ object IncLog extends App {
         var linesProcessed = 0
 
         implicit val config = Config(
+            createReportDirIfNotExists(cmd.getOptionValue("o")),
             cmd.hasOption('i') match {
                 case true => Some(new Regex(cmd.getOptionValue('i')))
                 case false => None
@@ -92,6 +104,26 @@ object IncLog extends App {
             formatter.printHelp(120, IncLog.getClass.getSimpleName, "", options, null);
             System.exit(1);
         }
+    }
+
+    def createReportDirIfNotExists(path: String): File = {
+        val outDir = new File(path)
+        if (outDir.exists() && outDir.isDirectory()) {
+            // do nothing
+        } else if (!outDir.exists()) {
+            // create
+            outDir.mkdirs()
+        } else if (outDir.exists() && outDir.isFile()) {
+            // break
+            throw new IOException(s"""${outDir} is a file, not a dir""")
+        }
+
+        val incDir = new File(s"""$path/inc""")
+        if (!incDir.exists()) {
+            incDir.mkdir()
+        }
+
+        outDir
     }
 
 }

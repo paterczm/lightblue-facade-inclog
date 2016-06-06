@@ -2,6 +2,7 @@ package com.redhat.lightblue.facade.inclog
 
 import org.slf4j.LoggerFactory
 import scala.util.matching.Regex
+import java.io.File
 
 case class IncLogEntry(date: String, bean: String, method: String, paramStr: String, var diff: IncLogDiff, line: String) {
     def call = s"""$bean.$method"""
@@ -12,7 +13,7 @@ case class PathDiff(path: String)
 
 abstract class IncLogDiff() {}
 
-case class Config(val includeRegex: Option[Regex], val excludeRegex: Option[Regex])
+case class Config(val outputDir: File, val includeRegex: Option[Regex], val excludeRegex: Option[Regex])
 
 object IncLogEntryExtractor {
 
