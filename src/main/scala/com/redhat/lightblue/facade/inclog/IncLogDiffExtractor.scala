@@ -35,8 +35,8 @@ object IncLogDiffExtractor {
         val fieldStr = _fieldStr.trim()
 
         if (fieldStr.isEmpty()) {
-            // there is a case when diff is empty... what is going on?
-            return PathDiff("<empty>")
+            // there is a case when diff is empty, I think those are boolean mismatches
+            return PathDiff("<this: boolean>")
         }
 
         if (!fieldStr.contains("Expected") && !fieldStr.contains("Unexpected")) {

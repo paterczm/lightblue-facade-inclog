@@ -27,7 +27,7 @@ object Reporter {
                 }
 
             }
-            case c: IncLogCountDiff => { addInconsistency(s"""${inc.bean} <array elem not found>""", inc, config.outputDir) }
+            case c: IncLogCountDiff => { addInconsistency(s"""${inc.bean} <array size mismatch>""", inc, config.outputDir) }
         }
     }
 
