@@ -88,7 +88,7 @@ class IncLogDiffExtractorTest {
             case IncLogDiffExtractor(x) => {
                 assertTrue(x.isInstanceOf[IncLogPathDiff])
 
-                assertEquals("<empty>", x.asInstanceOf[IncLogPathDiff].pathDiffs(0).path)
+                assertEquals("<this: boolean>", x.asInstanceOf[IncLogPathDiff].pathDiffs(0).path)
                 assertEquals(1, x.asInstanceOf[IncLogPathDiff].pathDiffs.length)
             }
             case _ => fail()
