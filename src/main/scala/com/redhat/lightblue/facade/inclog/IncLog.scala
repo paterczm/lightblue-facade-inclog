@@ -50,10 +50,17 @@ object IncLog extends App {
         .hasArg()
         .build();
 
+    val dontStopOnErrorOption = Option.builder()
+        .required(false)
+        .desc("Continue processing even when inconsistency parsing fails")
+        .longOpt("dont-stop-on-error")
+        .build();
+
     options.addOption(inconsistencyLogFilesOption);
     options.addOption(includeOption)
     options.addOption(excludeOption)
     options.addOption(outputOption)
+    options.addOption(dontStopOnErrorOption);
 
     val parser = new DefaultParser();
 
@@ -81,13 +88,23 @@ object IncLog extends App {
 
                 linesProcessed += 1
 
-                line match {
-                    case IncLogEntryExtractor(inc) => {
-                        Reporter.add(inc)
-                        incsProcessed += 1
+                try {
+                    line match {
+                        case IncLogEntryExtractor(inc) => {
+                            Reporter.add(inc)
+                            incsProcessed += 1
+                        }
+                        case _ => {
+                            // ignore
+                        }
                     }
-                    case _ => {
-                        // ignore
+                } catch {
+                    case e: Exception => {
+                        if (cmd.hasOption("dont-stop-on-error")) {
+                            logger.error("", e)
+                        } else {
+                            throw e;
+                        }
                     }
                 }
             }

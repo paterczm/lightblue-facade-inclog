@@ -9,6 +9,7 @@ usage: IncLog$
  -f,--files <lb-inconsistency.log>   lb-inconsistencies.log files
  -i,--include <arg>                  include regex
  -o,--output <arg>                   Report output directory
+ -- dont-stop-on-error               Continue processing even when inconsistency parsing fails
 ```
 
 Example:
