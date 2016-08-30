@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
+import scala.collection.mutable.MutableList
 
 object IncLog extends App {
 
@@ -22,11 +23,19 @@ object IncLog extends App {
     val options = new Options();
 
     val inconsistencyLogFilesOption = Option.builder("f")
-        .required(true)
+        .required(false)
         .desc("lb-inconsistencies.log files")
         .longOpt("files")
         .hasArgs()
         .argName("lb-inconsistency.log")
+        .build();
+
+    val inconsistencyLogFilesDirOption = Option.builder()
+        .required(false)
+        .desc("Directory with lb-inconsistencies.log files")
+        .longOpt("logdir")
+        .hasArg()
+        .argName("dir")
         .build();
 
     val includeOption = Option.builder("i")
@@ -57,6 +66,7 @@ object IncLog extends App {
         .build();
 
     options.addOption(inconsistencyLogFilesOption);
+    options.addOption(inconsistencyLogFilesDirOption);
     options.addOption(includeOption)
     options.addOption(excludeOption)
     options.addOption(outputOption)
@@ -67,7 +77,15 @@ object IncLog extends App {
     try {
         val cmd = parser.parse(options, args);
 
-        var filePaths = cmd.getOptionValues("files");
+        var filePaths = if (cmd.hasOption("files")) {
+            cmd.getOptionValues("files");
+        } else if (cmd.hasOption("logdir")) {
+            findLogFiles(cmd.getOptionValue("logdir"))
+        } else {
+            throw new Exception("Either --files or --logdir needs to be specified")
+        }
+
+        println(s"""Processing $filePaths""")
 
         var incsProcessed = 0
         var linesProcessed = 0
@@ -141,6 +159,22 @@ object IncLog extends App {
         }
 
         outDir
+    }
+
+    def findLogFiles(file: File, filePaths: MutableList[String]) {
+        if (file.isDirectory()) {
+            findLogFiles(file, filePaths)
+        } else {
+            if (file.getName.endsWith("log")) {
+                filePaths+=file.getPath
+            }
+        }
+    }
+
+    def findLogFiles(file: String): Array[String] = {
+        val list = new MutableList[String]
+        findLogFiles(new File(file), list)
+        list.toArray
     }
 
 }
